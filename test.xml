@@ -26,7 +26,7 @@
 		<option>Взаимно</option>
 		<option correct="">Можно чуть более логичный XML?</option>
 	</question>
-	<question type="yes-no" levels="easy medium hard">
+	<question type="single-choice" levels="easy medium hard">
 		<text>Можно чуть более логичный XML?</text>
 		<option correct="">Нет</option>
 		<option>Да</option>
