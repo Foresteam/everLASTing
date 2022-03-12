@@ -17,7 +17,7 @@ async def on_message(message):
     await message.channel.send('Hello!')
 
 @client.event
-async def on_message(message):
+async def on_message(message: discord.Message):
     if message.author == client.user:
         return
 
