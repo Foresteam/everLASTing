@@ -22,9 +22,11 @@ class Command:
 			alts[i] = f'"{alts[i]}"'
 		args = []
 		for arg in self.args:
+			try: arg['type'].index('|')
+			except: arg['type'] += '|'
 			typ, defval = arg['type'].split('|')
 			args.append(arg['name'] + (defval and '=' + defval or '') + ': ' + typ + (arg['desc'] and ' - ' + arg['desc'] or ''))
-		return f'{name}' + (len(alts) > 1 and f'[{alts.join(", ")}]' or '') + f'{len(args) > 0 and " (" + args.join(", ") + ")" or ""} - {self.help}'
+		return f'{name}' + (len(alts) > 0 and f'[{", ".join(alts)}]' or '') + f'{len(args) > 0 and " (" + ", ".join(args) + ")" or ""} - {self.help}'
 class ArgParser:
 	class CommandNotFound(Exception):
 		def __init__(self, msg: str):

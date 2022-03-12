@@ -1,0 +1,35 @@
+<!-- test, aka level or smth -->
+<?xml version="1.0" encoding="UTF-8"?>
+<test name="test1">
+	<theory>
+		<text>Some text for introduction...</text>
+		<!-- Локальный файл -->
+		<attachment uri="attachment.docx"/>
+		<!-- Просто ссылка. Можно на файл из интернета -->
+		<embedded uri="https://docs.google.com/presentation/d/1CEDW9hArxB_iVJHoWZgZzj7ob4Jwgzxx"/>
+	</theory>
+	<difficulty level="1">
+	<question type="single-choice">
+		<text>Я вас приветствую. А вы?</text>
+		<option>А я вас нет</option>
+		<option>Взаимно</option>
+		<option correct="">Можно чуть более логичный XML?</option>
+	</question>
+	<question type="yes-no">
+		<text>Можно чуть более логичный XML?</text>
+		<option correct="">Нет</option>
+		<option>Да</option>
+	</question>
+	<question type="multi-choice">
+		<text>Кто виноват в том, что в коде черт ногу сломит?</text>
+		<option correct="">Никто</option>
+		<option correct="">Госдеп</option>
+		<option correct="">Мерфи</option>
+		<option>Этот аноним... как его там, Федор, во</option>
+	</question>
+	<question type="text">
+		<text>На чем написан этот чудо-проект?</text>
+		<attachment uri="pylogo.png"/> <!-- Должно отображаться как картинка! -->
+		<option correct="Phyton"/>
+	</question>
+</test>
