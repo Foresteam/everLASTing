@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- <test> - aka level or smth. name - имя; mix - "перемешивает" вопросы, если указан -->
-<test name="test1" mix="">
+<!-- pass-on-error - если не указан, тест будет завершен при первой же ошибке. -->
+<test name="test1" mix="" pass-on-error="">
 	<theory>
 		<text>Some text for introduction...</text>
 		<!-- Загрузить и приложить файл -->
