@@ -1,7 +1,8 @@
 # everLASTing games for EnergyHack2022
+![](pylogo.png)
 ## Plan-kapkan
 1.
-    * Перевести парсер команд на Phyton (моя наработка, JS).
+    * Перевести [парсер команд](https://github.com/Foresteam/cmd-argparse) на Phyton.
       ### Status: ✓
     * Написать каркас бота. Он должен уметь отличать групповые диалоги(сервера) от ЛС, отправлять вложения. Для группы будет 1 тест на канал, а в ЛС - персональный. [нужен объект Message]
       ### Status: ?
