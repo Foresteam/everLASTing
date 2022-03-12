@@ -1,35 +1,50 @@
-<!-- test, aka level or smth -->
 <?xml version="1.0" encoding="UTF-8"?>
-<test name="test1">
+<!-- <test> - aka level or smth. name - имя; mix - "перемешивает" вопросы, если указан -->
+<test name="test1" mix="">
 	<theory>
 		<text>Some text for introduction...</text>
 		<!-- Локальный файл -->
-		<attachment uri="attachment.docx"/>
+		<attachment uri="attachment.docx" />
 		<!-- Просто ссылка. Можно на файл из интернета -->
-		<embedded uri="https://docs.google.com/presentation/d/1CEDW9hArxB_iVJHoWZgZzj7ob4Jwgzxx"/>
+		<embedded uri="https://docs.google.com/presentation/d/1CEDW9hArxB_iVJHoWZgZzj7ob4Jwgzxx" />
 	</theory>
-	<difficulty level="1">
-	<question type="single-choice">
+	<!-- атрибут levels означает, на каких уровнях сложности будет появляться данный вопрос -->
+	<!-- Если уровень сложности будет всего один, то данный атрибут можно опустить. -->
+	<question type="single-choice" levels="all">
+		<!-- <message> - сообщение, которое будет отправлено перед непосредственно вопросом. Их может быть несколько. -->
+		<message>
+			<text>какой-то текст 1.</text>
+			<embedded uri="" />
+		</message>
+		<message>
+			<text>какой-то текст 2.</text>
+			<attachment uri="" />
+		</message>
+		<!-- Текст вопроса. Он будет в одном сообщении с вариантами ответа. -->
 		<text>Я вас приветствую. А вы?</text>
 		<option>А я вас нет</option>
 		<option>Взаимно</option>
 		<option correct="">Можно чуть более логичный XML?</option>
 	</question>
-	<question type="yes-no">
+	<question type="yes-no" levels="easy medium hard">
 		<text>Можно чуть более логичный XML?</text>
 		<option correct="">Нет</option>
 		<option>Да</option>
 	</question>
 	<question type="multi-choice">
 		<text>Кто виноват в том, что в коде черт ногу сломит?</text>
+		<!-- Множественный выбор. -->
 		<option correct="">Никто</option>
 		<option correct="">Госдеп</option>
 		<option correct="">Мерфи</option>
 		<option>Этот аноним... как его там, Федор, во</option>
 	</question>
-	<question type="text">
+	<question type="text" levels="hard">
 		<text>На чем написан этот чудо-проект?</text>
-		<attachment uri="pylogo.png"/> <!-- Должно отображаться как картинка! -->
-		<option correct="Phyton"/>
+		<attachment uri="pylogo.png" /> <!-- Должно отображаться как картинка! -->
+		<!-- Так как ответ здесь текстовый, то мы указываем НЕпарные теги с правильными ответами. Пробелы и регистр не учитываются. -->
+		<option correct="Phyton" />
+		<option correct="Fyton" />
+		<option correct="Футон" />
 	</question>
 </test>
