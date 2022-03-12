@@ -49,23 +49,35 @@ async def Help(msg: discord.Message, args = [], refwith = None):
 async def ListTests(msg: discord.Message, args = [], refwith = None):
     global tests
     out = [f'{i + 1}. {tests[i].name}' for i in range(len(tests))]
-    out.append('Введите номер игры из списка (начав сообщение с префикса ">" или через "ответить")')
+    out.append('Введите номер игры из списка (начав сообщение с префикса "> " или через "ответить")')
     GetContext(msg).state = State.TEST_SELECTION
     await msg.reply('\n'.join(out))
 async def ListLevels(msg: discord.Message, args = [], refwith = None):
     out = ['легкий', 'средний', 'сложный']
-    out.append('Введите сложность (начав сообщение с префикса ">" или через "ответить")')
+    out.append('Введите сложность (начав сообщение с префикса "> " или через "ответить")')
     GetContext(msg).state = State.LEVEL_SELECTION
     await msg.reply('\n'.join(out))
 async def Reply(msg: discord.Message, args = [], refwith = None):
+    global client
+    # filter replies to us from other messages
+    if not refwith and (not msg.reference or (await (await client.fetch_channel(msg.reference.channel_id)).fetch_message(msg.reference.message_id)).author.id != client.user.id):
+        return
     ctx = GetContext(msg)
     try:
         global tests
         if ctx.state == State.TEST_SELECTION:
             ctx.test = tests[int(args['reply']) - 1]
-            await ListLevels(msg=msg)
+            return await ListLevels(msg=msg)
         if ctx.state == State.LEVEL_SELECTION:
             ctx.test = ctx.test.GetInstance(LevelEng(args['reply'].replace(' ', '').lower()))
+            ctx.state = State.QUESTION_ANSWER
+            await ctx.test.Begin(msg)
+            if not await ctx.test.Next(msg):
+                raise Exception('Game is empty!')
+            return 
+        if ctx.state == State.QUESTION_ANSWER:
+            if not ctx.test.Accept(args['reply']) or not ctx.test.Next(msg):
+                ctx.test.End(msg)
     except Exception as e:
         raise e
 
@@ -78,13 +90,13 @@ commands = [
         Help
     ),
     Command(
-        ['?играть', '?игра'],
+        ['?играть', '?игра', '?>'],
         [],
         'Начать игру',
         ListTests
     ),
     Command(
-        ['>', '?>', ''],
+        ['>', ''],
         [ { 'type': 'string...', 'name': 'reply', 'desc': 'ответ' } ],
         'Ответ на вопрос бота.',
         Reply
@@ -106,8 +118,12 @@ contexts = {
         #serverID/channelID: Context
     }
 }
+client: discord.Client
 async def onMessage(msg: discord.Message):
     cmd: Command
     # try except...
     cmd, args, refwith = parser.parse(msg, commands)
     await cmd.execute(msg, args=args, refwith=refwith)
+def passClient(cl):
+    global client
+    client = cl

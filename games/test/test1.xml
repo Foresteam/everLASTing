@@ -5,9 +5,9 @@
 	<theory>
 		<text>Some text for introduction...</text>
 		<!-- Загрузить и приложить файл -->
-		<attachment uri="attachment.docx" />
+		<attachment uri="attachment.pdf" />
 		<!-- Вложение. color - RGB цвет, записывается по правилам HTML -->
-		<embedded uri="https://docs.google.com/presentation/d/1CEDW9hArxB_iVJHoWZgZzj7ob4Jwgzxx" title="Title" description="description" color="#FFF" />
+		<embed uri="https://docs.google.com/presentation/d/1CEDW9hArxB_iVJHoWZgZzj7ob4Jwgzxx" title="Title" description="description" color="#FFF" />
 	</theory>
 	<!-- атрибут levels означает, на каких уровнях сложности будет появляться данный вопрос -->
 	<!-- Если уровень сложности будет всего один, то данный атрибут можно опустить. -->
@@ -15,7 +15,7 @@
 		<!-- <message> - сообщение, которое будет отправлено перед непосредственно вопросом. Их может быть несколько. -->
 		<message>
 			<text>какой-то текст 1.</text>
-			<embedded uri="" />
+			<embed uri="" />
 		</message>
 		<message>
 			<text>какой-то текст 2.</text>

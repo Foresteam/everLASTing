@@ -2,12 +2,13 @@
 from copy import deepcopy
 import json
 from posixpath import basename
+from pydoc import describe
 from random import shuffle
 from xml.etree.ElementTree import ElementTree as ET, Element
-from discord import Color
+import discord
 
 class Test:
-    class Embedded:
+    class embed:
         def __init__(self, attrs: dict):
             self.uri = attrs['uri'] if 'uri' in attrs else ''
             self.title = attrs['title'] if 'title' in attrs else ''
@@ -19,22 +20,22 @@ class Test:
                     color = ''.join([d + '0' for d in color])
                 self.color = int(color, 16)
             else:
-                self.color = Color.from_rgb(*map(int, color.replace('rgb', '').replace('(', '').replace(')', '').split(',')))
+                self.color = discord.Color.from_rgb(*map(int, color.replace('rgb', '').replace('(', '').replace(')', '').split(',')))
         def toJSON(self):
             return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
     class Msg:
         def __init__(self):
             self.text = ''
             self.attachments: list[str] = []
-            self.embedded: list[Test.Embedded] = []
+            self.embed: Test.embed = None
         def fromXML(self, xml: Element):
             for child in xml:
                 if child.tag == 'text':
                     self.text += child.text
                 if child.tag == 'attachment':
                     self.attachments.append(child.attrib['uri'])
-                if child.tag == 'embedded':
-                    self.embedded.append(Test.Embedded(child.attrib))
+                if child.tag == 'embed':
+                    self.embed = Test.embed(child.attrib)
             return self
         def toJSON(self):
             return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
@@ -123,7 +124,7 @@ class Test:
         # print(self.theory.toJSON())
 
     def __init__(self, filename: str):
-        self.progress: int = 0
+        self.progress: int = -1
         self.score: float = 0
         self.level: str
 
@@ -137,3 +138,36 @@ class Test:
         t.level = level
 
         return t
+    
+    async def __SendMessage(message: discord.Message, channel: discord.TextChannel, msg: Msg):
+        await channel.send(
+            reference=message,
+            files=[discord.File(file) for file in msg.attachments] if len(
+                msg.attachments) > 0 else None,
+            embed=discord.Embed(
+                title=msg.embed.title,
+                color=msg.embed.color,
+                description=msg.embed.description,
+                url=msg.embed.uri
+            ) if msg.embed else None,
+            content=msg.text
+        )
+    def GetQuestions(self):
+        return self.levels[self.level]
+    async def Begin(self, message: discord.Message):
+        c: discord.TextChannel = message.channel
+        for msg in [*self.theory.beforeSend, self.theory.msg]:
+            await Test.__SendMessage(message, c, msg)
+    def Accept(self, answer: str):
+        result = self.GetQuestions()[self.progress].Check(answer)
+        self.score += result
+        if result < 1 and not self.passOnError:
+            return False
+        return True
+    async def Next(self, message: discord.Message):
+        self.progress += 1
+        if self.progress >= len(self.GetQuestions()):
+            return False
+        return True
+    async def End(self, message: discord.Message):
+        pass

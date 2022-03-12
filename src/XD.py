@@ -10,6 +10,7 @@ import Commander
 DISCORD_TOKEN = Path('./token').read_text()
 print(DISCORD_TOKEN)
 client = discord.Client()
+Commander.passClient(client)
 
 @client.event
 async def on_message(message):
