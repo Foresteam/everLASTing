@@ -1,25 +1,13 @@
 # bot.py
 import os
+from pathlib import Path
 import random
 import discord
 from discord.ext import commands
 
-
-DISCORD_TOKEN = 'OTUyMTIyNjMyNzA1MzAyNTc4.YixbTQ.Elvy2SdGST89PFfOySNUXb4yxho'
-DISCORD_GUILD = '906579056210899004'
+DISCORD_TOKEN = Path('./token').read_text()
+print(DISCORD_TOKEN)
 client = discord.Client()
-
-@client.event
-async def on_ready():
-    print(f'{client.user} has connected to Discord!')
-    for guild in client.guilds:
-        if guild.name == DISCORD_GUILD:
-            break
-
-    print(
-        f'{client.user} is connected to the following guild:\n'
-        f'{guild.name}(id: {guild.id})'
-    )
 
 @client.event
 async def on_message(message):
