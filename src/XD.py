@@ -5,6 +5,8 @@ import random
 import discord
 from discord.ext import commands
 
+import Commander
+
 DISCORD_TOKEN = Path('./token').read_text()
 print(DISCORD_TOKEN)
 client = discord.Client()
@@ -20,6 +22,9 @@ async def on_message(message):
 async def on_message(message: discord.Message):
     if message.author == client.user:
         return
+
+    await Commander.onMessage(message)
+    return
 
     brooklyn_99_quotes = [
         'I\'m the human form of the 💯 emoji.',

@@ -1,5 +1,8 @@
 # https://www.youtube.com/watch?v=c2ZGE5Fpu9E
+from copy import deepcopy
 import json
+from posixpath import basename
+from random import shuffle
 from xml.etree.ElementTree import ElementTree as ET, Element
 from discord import Color
 
@@ -71,13 +74,15 @@ class Test:
                 self.type = xml.attrib['type']
             if 'levels' in xml.attrib:
                 self.levels = xml.attrib['levels'].split()
+            else:
+                self.levels = 'medium'
             if 'all' in self.levels:
                 self.levels = ['easy', 'medium', 'hard']
             for child in xml:
                 if child.tag == 'option':
                     self.options.append(Test.Option(child, self.type))
             return self
-        def check(self, answer: str) -> float:
+        def Check(self, answer: str) -> float:
             if self.type == 'single-choice':
                 return 1 if self.options[int(answer)].correct else 0
             if self.type == 'multi-choice':
@@ -94,10 +99,10 @@ class Test:
                 return 0
         def toJSON(self):
             return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-    def load(self, filename: str):
+    def Load(self, filename: str):
         xml: Element = ET(file=filename).getroot()
         self.mix = 'mix' in xml.attrib
-        self.name = xml.attrib['name']
+        self.name = basename(filename).replace('.xml', '')
         self.passOnError = 'pass-on-error' in xml.attrib
         self.theory = Test.Theory()
         self.levels = { 'easy': [], 'medium': [], 'hard': [] }
@@ -109,12 +114,26 @@ class Test:
                 for k in self.levels:
                     if k in q.levels:
                         self.levels[k].append(q)
+        for k in self.levels:
+            if len(self.levels[k]) == 0:
+                del self.levels[k]
         # for k in self.levels:
         #     for level in self.levels[k]:
         #         print(level.toJSON())
         # print(self.theory.toJSON())
 
     def __init__(self, filename: str):
-        self.load(filename)
+        self.progress: int = 0
+        self.score: float = 0
+        self.level: str
 
-Test('test.xml')
+        self.Load(filename)
+
+    def GetInstance(self, level: str):
+        t = deepcopy(self)
+        if t.mix:
+            for k in t.levels:
+                shuffle(t.levels[k])
+        t.level = level
+
+        return t
