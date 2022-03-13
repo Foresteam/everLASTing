@@ -2,13 +2,17 @@
 <!-- <test> - aka level or smth. name - имя; mix - "перемешивает" вопросы, если указан -->
 <!-- health - если указан и не равен 0, то означает количесво потерянных баллов до принудительного завершения игры -->
 <!-- иначе игра будет идти, пока не будут даны ответы на все вопросы -->
-<test name="test1" mix="" health="0">
+<test name="test1" health="0">
 	<theory>
 		<text>Some text for introduction...</text>
 		<!-- Загрузить и приложить файл -->
-		<attachment uri="attachment.pdf" />
+		<!-- <attachment url="attachment.pdf" /> -->
 		<!-- Вложение. color - RGB цвет, записывается по правилам HTML -->
-		<embed uri="https://docs.google.com/presentation/d/1CEDW9hArxB_iVJHoWZgZzj7ob4Jwgzxx" title="Title" description="description" color="#FFF" />
+		<embed title="Title" color="#FFF">
+			<text>Description</text>
+			<image url="https://m.media-amazon.com/images/I/81Q3j+pXigL._SL1500_.jpg" />
+			<thumbnail url="https://i.pinimg.com/564x/51/3c/b5/513cb50a77f051b3456666c758710db3.jpg" />
+		</embed>
 	</theory>
 	<!-- атрибут levels означает, на каких уровнях сложности будет появляться данный вопрос -->
 	<!-- Если уровень сложности будет всего один, то данный атрибут можно опустить. -->
@@ -18,7 +22,6 @@
 		<!-- <message> - сообщение, которое будет отправлено перед непосредственно вопросом. Их может быть несколько. -->
 		<message>
 			<text>какой-то текст 1.</text>
-			<embed />
 		</message>
 		<message>
 			<text>какой-то текст 2.</text>
@@ -44,7 +47,7 @@
 	</question>
 	<question type="text" levels="hard">
 		<text>На чем написан этот чудо-проект?</text>
-		<attachment uri="pylogo.png" /> <!-- Должно отображаться как картинка! -->
+		<attachment url="pylogo.png" /> <!-- Должно отображаться как картинка! -->
 		<!-- Так как ответ здесь текстовый, то мы указываем НЕпарные теги с правильными ответами. Пробелы и регистр не учитываются. -->
 		<option correct="Phyton" />
 		<option correct="Fyton" />
