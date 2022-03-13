@@ -1,5 +1,3 @@
 discord
-dotenv
-pymongo
-dnspython
-pandas
+discord.ext
+discord_components

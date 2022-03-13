@@ -1,0 +1,32 @@
+<test name="test1" mix="" health="0">
+	<theory>
+		<text>Some text for introduction...</text>
+		<!-- Загрузить и приложить файл -->
+		<attachment uri="attachment.pdf" />
+		<!-- Вложение. color - RGB цвет, записывается по правилам HTML -->
+		<embed uri="https://docs.google.com/presentation/d/1CEDW9hArxB_iVJHoWZgZzj7ob4Jwgzxx" title="Title" description="description" color="#FFF" />
+	</theory>
+	<!-- атрибут levels означает, на каких уровнях сложности будет появляться данный вопрос -->
+	<!-- Если уровень сложности будет всего один, то данный атрибут можно опустить. -->
+	<!-- weight - количество баллов за данный вопрос -->
+	<!-- single-choice означает, что нужно выбрать 1 вариант. При этом, если правильных несколько, зачтется любой -->
+	<question type="single-choice" levels="all" weight="1">
+		<!-- <message> - сообщение, которое будет отправлено перед непосредственно вопросом. Их может быть несколько. -->
+		<text>1. Какой диэлектрик определяет электрическую прочность внешней изоляции?</text>
+		<option correct="">Атмосферный воздух</option>
+		<option>Сткело</option>
+		<option>Резина</option>
+	</question>
+	<question type="single-choice" levels="easy medium hard" weight="1">
+		<text>2. Что является электродами во внешней изоляции?</text>
+		<option correct="">Провода фаз, металлические и железобетонные опоры и траверсы, поверхность земли.</option>
+		<option>Провода фаз, кирпичные и бетонные опоры, поверхность земли</option>
+		<option>Провода фаз, металлические и железобетонные опоры, поверхность атмосферы</option>
+	</question>
+	<question type="single-choice" levels="easy" weight="1">
+		<text>3. Какие диэлектрики применяются для поддержки проводов на ЛЭП и ошиновки на ОРУ?</text>
+		<option>Газообразные диэлектрики</option>
+		<option>Жидкие диэлектрики: хлорированные и фторированные углеводороды, парафиновые и вазелиновые масла</option>
+		<option correct="">Твердые диэлектрики:  фарфор, стекло, полимеры.</option>
+	</question>
+</test>
