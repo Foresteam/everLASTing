@@ -1,2 +1,5 @@
 discord
 dotenv
+pymongo
+dnspython
+pandas
