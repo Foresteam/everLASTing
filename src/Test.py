@@ -1,11 +1,15 @@
 # https://www.youtube.com/watch?v=c2ZGE5Fpu9E
 from copy import deepcopy
+from functools import reduce
 import json
 from posixpath import basename
 from pydoc import describe
 from random import shuffle
 from xml.etree.ElementTree import ElementTree as ET, Element
 import discord
+
+def generateMention(id: str):
+	return f'<@!{id}>'
 
 class Test:
     class embed:
@@ -42,7 +46,7 @@ class Test:
     class Option:
         def __init__(self, xml: Element, typ: str):
             self.correct = 'correct' in xml.attrib
-            self.text: str
+            self.text: str = None
             if typ != 'text':
                 self.text = xml.text
             else:
@@ -69,10 +73,13 @@ class Test:
             self.type = 'multi-choice'
             self.levels = ['easy', 'medium', 'hard']
             self.options: list[Test.Option] = []
+            self.weight = 1
         def fromXML(self, xml: Element):
             Test.Unit.fromXML(self, xml)
             if 'type' in xml.attrib:
                 self.type = xml.attrib['type']
+            if 'weight' in xml.attrib:
+                self.weight = int(xml.attrib['weight'])
             if 'levels' in xml.attrib:
                 self.levels = xml.attrib['levels'].split()
             else:
@@ -85,18 +92,18 @@ class Test:
             return self
         def Check(self, answer: str) -> float:
             if self.type == 'single-choice':
-                return 1 if self.options[int(answer)].correct else 0
+                return self.weight if self.options[int(answer.split()[0]) - 1].correct else 0
             if self.type == 'multi-choice':
                 corrent = 0
-                chosen = answer.split()
+                chosen = [str(int(a) - 1) for a in answer.split()]
                 for k, v in [(i, self.options[i],) for i in range(len(self.options))]:
                     if str(k) in chosen and v.correct or not v.correct:
                         correct += 1
-                return len(self.options) / correct
+                return correct / len(self.options) * self.weight
             if self.type == 'text':
                 for v in self.options:
                     if v.correct and v.correct.lower().replace(' ', '') == answer.lower().replace(' ', ''):
-                        return 1
+                        return self.weight
                 return 0
         def toJSON(self):
             return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
@@ -104,7 +111,7 @@ class Test:
         xml: Element = ET(file=filename).getroot()
         self.mix = 'mix' in xml.attrib
         self.name = basename(filename).replace('.xml', '')
-        self.passOnError = 'pass-on-error' in xml.attrib
+        self.health = int(xml.attrib['health']) if 'health' in xml.attrib else None
         self.theory = Test.Theory()
         self.levels = { 'easy': [], 'medium': [], 'hard': [] }
         for child in xml:
@@ -127,6 +134,7 @@ class Test:
         self.progress: int = -1
         self.score: float = 0
         self.level: str
+        self.participants: list[str]
 
         self.Load(filename)
 
@@ -136,38 +144,61 @@ class Test:
             for k in t.levels:
                 shuffle(t.levels[k])
         t.level = level
+        t.participants = []
 
         return t
     
-    async def __SendMessage(message: discord.Message, channel: discord.TextChannel, msg: Msg):
-        await channel.send(
-            reference=message,
-            files=[discord.File(file) for file in msg.attachments] if len(
-                msg.attachments) > 0 else None,
-            embed=discord.Embed(
-                title=msg.embed.title,
-                color=msg.embed.color,
-                description=msg.embed.description,
-                url=msg.embed.uri
-            ) if msg.embed else None,
-            content=msg.text
-        )
+    async def __SendMessage(message: discord.Message, channel: discord.TextChannel, msg: Msg, stext = None):
+        try:
+            await channel.send(
+                reference=message,
+                files=[discord.File(file) for file in msg.attachments] if len(
+                    msg.attachments) > 0 else None,
+                embed=discord.Embed(
+                    title=msg.embed.title or '-',
+                    color=msg.embed.color,
+                    description=msg.embed.description or '-',
+                    url=msg.embed.uri
+                ) if msg.embed else None,
+                content=stext or msg.text
+            )
+        except Exception as e:
+            message.reply(str(e))
     def GetQuestions(self):
         return self.levels[self.level]
     async def Begin(self, message: discord.Message):
         c: discord.TextChannel = message.channel
         for msg in [*self.theory.beforeSend, self.theory.msg]:
             await Test.__SendMessage(message, c, msg)
-    def Accept(self, answer: str):
-        result = self.GetQuestions()[self.progress].Check(answer)
+    def Accept(self, answer: str, message: discord.Message):
+        if message.author.id not in self.participants:
+            self.participants.append(message.author.id)
+        q: Test.Question = self.GetQuestions()[self.progress]
+        result = q.Check(answer)
         self.score += result
-        if result < 1 and not self.passOnError:
-            return False
+        if result < q.weight and self.health:
+            self.health -= result
+            if self.health <= 0:
+                return False
         return True
     async def Next(self, message: discord.Message):
         self.progress += 1
         if self.progress >= len(self.GetQuestions()):
             return False
+        q: Test.Question = self.GetQuestions()[self.progress]
+        msgs = [*q.beforeSend, q.msg]
+        opts = []
+        for i in range(len(q.options)):
+            if q.options[i].text:
+                opts.append(f'{i + 1}. {q.options[i].text}')
+        for msg in msgs:
+            await Test.__SendMessage(message, message.channel, msg, stext=(f'{self.progress + 1}. {msg.text}\n' + '\n'.join(opts) if msg == q.msg else None))
         return True
+    def GetTotal(self):
+        return reduce(lambda p, v: p + v.weight, self.GetQuestions(), 0)
     async def End(self, message: discord.Message):
-        pass
+        await message.reply(
+            f'Игра завершена. Результат: {self.score}/{self.GetTotal()} ({100 * self.score // self.GetTotal()}%)' +
+            '\nУчастники: ' + ', '.join([generateMention(id) for id in self.participants]) +
+            f'\n {"<" if len(self.participants) < 2 else ">"}1,  баллы **{"" if len(self.participants) < 2 else "не"}учтены**'
+        )

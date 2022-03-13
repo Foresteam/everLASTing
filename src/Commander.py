@@ -76,8 +76,8 @@ async def Reply(msg: discord.Message, args = [], refwith = None):
                 raise Exception('Game is empty!')
             return 
         if ctx.state == State.QUESTION_ANSWER:
-            if not ctx.test.Accept(args['reply']) or not ctx.test.Next(msg):
-                ctx.test.End(msg)
+            if not ctx.test.Accept(args['reply'], msg) or not await ctx.test.Next(msg):
+                await ctx.test.End(msg)
     except Exception as e:
         raise e
 
