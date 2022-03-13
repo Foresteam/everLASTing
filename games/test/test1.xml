@@ -3,7 +3,7 @@
 <!-- health - если указан и не равен 0, то означает количесво потерянных баллов до принудительного завершения игры -->
 <!-- иначе игра будет идти, пока не будут даны ответы на все вопросы -->
 <!-- Сам тег может называться как угодно (в рамках правил XML). Логично здесь писать что-то типа test, root или game. -->
-<superLevel name="test1" health="0">
+<super-level name="test1" health="0">
 	<theory>
 		<text>Some text for introduction...</text>
 		<!-- Загрузить и приложить файл -->
@@ -38,6 +38,7 @@
 		<option correct="">Нет</option>
 		<option>Да</option>
 	</question>
+	<!-- levels=all по умолчанию -->
 	<question type="multi-choice">
 		<text>Кто виноват в том, что в коде черт ногу сломит?</text>
 		<!-- Множественный выбор. -->
@@ -54,4 +55,4 @@
 		<option correct="Fyton" />
 		<option correct="Футон" />
 	</question>
-</test>
+</super-level>

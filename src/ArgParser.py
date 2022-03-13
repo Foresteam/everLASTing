@@ -66,12 +66,13 @@ class ArgParser:
 			i = ttext.find('"')
 			if cnstrStr:
 				tstr = ttext[:i]
-				strs.push(tstr)
+				strs.append(tstr)
 				text = text.replace(f'"{tstr}"', '%s')
 				cnstrStr = False
 			else:
 				cnstrStr = True
-			ttext = ttext.substring(i + 1)
+			ttext = ttext[i + 1:]
+		print(strs)
 		
 		i = 0
 		doVArg, vArg, vArgType, vArgName = False, [], '', ''
@@ -80,7 +81,7 @@ class ArgParser:
 				continue
 			val = None
 
-			ttype: str
+			ttype: str = ''
 			if not doVArg and len(args) > i:
 				ttype = args[i]['type']
 				if ttype.startswith('...'):
@@ -89,6 +90,7 @@ class ArgParser:
 					vArgName = args[i]['name']
 
 			tp = vArgType if doVArg else ttype
+			tp = tp.replace('|', '')
 			if tp == 'int':
 				val = int(arg)
 			elif tp == 'float':
@@ -108,7 +110,7 @@ class ArgParser:
 			else:
 				val = arg
 			if doVArg:
-				vArg.push(val)
+				vArg.append(val)
 			elif len(args) > i:
 				rargs[args[i]['name']] = val
 			i += 1
@@ -117,6 +119,8 @@ class ArgParser:
 
 		if i < len(args):
 			for i in range(len(args)):
+				if args[i]['name'] in rargs:
+					continue
 				try: args[i]['type'].index('|')
 				except: args[i]['type'] += '|'
 				typ, val = args[i]['type'].split('|')

@@ -24,7 +24,7 @@ class Test:
 		def fromXML(self, xml):
 			self.url = xml.attrib['url'] if 'url' in xml.attrib else ''
 			self.title = xml.attrib['title'] if 'title' in xml.attrib else ''
-			self.description = None
+			self.description = ''
 			color = xml.attrib['color'] if 'color' in xml.attrib else '#FFF'
 			if color.startswith('#'):
 				color = color[1:]
@@ -41,8 +41,6 @@ class Test:
 				if child.tag == 'text':
 					self.description += child.text
 			return self
-		def toJSON(self):
-			return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 	class Msg:
 		def __init__(self):
 			self.text = ''
@@ -57,8 +55,6 @@ class Test:
 				if child.tag == 'embed':
 					self.embed = Test.Embed().fromXML(child)
 			return self
-		def toJSON(self):
-			return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 	class Option:
 		def __init__(self, xml: ET.Element, typ: str):
 			self.correct = 'correct' in xml.attrib
@@ -67,8 +63,6 @@ class Test:
 				self.text = xml.text
 			else:
 				self.correct = xml.attrib['correct'] if 'correct' in xml.attrib else ''
-		def toJSON(self):
-			return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 	class Unit:
 		def __init__(self):
 			self.beforeSend: list[Test.Msg] = []
@@ -79,8 +73,6 @@ class Test:
 				if child.tag == 'message':
 					self.beforeSend.append(Test.Msg().fromXML(child))
 			return self
-		def toJSON(self):
-			return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 	class Theory(Unit):
 		pass
 	class Question(Unit):
@@ -98,10 +90,6 @@ class Test:
 				self.weight = int(xml.attrib['weight'])
 			if 'levels' in xml.attrib:
 				self.levels = xml.attrib['levels'].split()
-			else:
-				self.levels = 'medium'
-			if 'all' in self.levels:
-				self.levels = ['easy', 'medium', 'hard']
 			for child in xml:
 				if child.tag == 'option':
 					self.options.append(Test.Option(child, self.type))
@@ -110,10 +98,11 @@ class Test:
 			if self.type == 'single-choice':
 				return self.weight if self.options[int(answer.split()[0]) - 1].correct else 0
 			if self.type == 'multi-choice':
-				corrent = 0
+				correct = 0
 				chosen = [str(int(a) - 1) for a in answer.split()]
+				print(chosen)
 				for k, v in [(i, self.options[i],) for i in range(len(self.options))]:
-					if str(k) in chosen and v.correct or not v.correct:
+					if str(k + 1) in chosen and v.correct or not v.correct and str(k + 1) not in chosen:
 						correct += 1
 				return correct / len(self.options) * self.weight
 			if self.type == 'text':
@@ -121,8 +110,6 @@ class Test:
 					if v.correct and v.correct.lower().replace(' ', '') == answer.lower().replace(' ', ''):
 						return self.weight
 				return 0
-		def toJSON(self):
-			return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 	def Load(self, filename: str):
 		xml: ET.Element = ET.parse(filename, parser=ET.XMLParser(encoding='utf-8')).getroot()
 
@@ -142,10 +129,6 @@ class Test:
 		for k in self.levels:
 			if len(self.levels[k]) == 0:
 				del self.levels[k]
-		# for k in self.levels:
-		#     for level in self.levels[k]:
-		#         print(level.toJSON())
-		# print(self.theory.toJSON())
 
 	def __init__(self, filename: str):
 		self.progress: int = -1
@@ -167,7 +150,6 @@ class Test:
 	
 	async def __SendMessage(message: discord.Message, channel: discord.TextChannel, msg: Msg, stext = None):
 		try:
-			print(msg.embed) if msg.embed else None
 			await channel.send(
 				reference=message,
 				files=[discord.File(file) for file in msg.attachments] if len(
@@ -178,7 +160,7 @@ class Test:
 		except Exception as e:
 			# await message.reply(str(e))
 			raise e
-	def GetQuestions(self):
+	def GetQuestions(self) -> list[Question]:
 		return self.levels[self.level]
 	async def Begin(self, message: discord.Message):
 		c: discord.TextChannel = message.channel
