@@ -30,6 +30,12 @@ def GetContext(msg: discord.Message) -> Context:
         contexts[ctxType][id] = Context()
     return contexts[ctxType][id]
 def LevelEng(level: str):
+    if level.startswith('ea'):
+        return 'easy'
+    if level.startswith('me'):
+        return 'medium'
+    if level.startswith('ha'):
+        return 'hard'
     return { 'легкий': 'easy', 'средний': 'medium', 'сложный': 'hard' }[level]
 
 async def Help(msg: discord.Message, args = [], refwith = None):
