@@ -46,6 +46,10 @@ def LevelEng(level: str):
 async def Help(msg: discord.Message, args = {}, refwith = None):
 	global commands
 	fs: str
+	if 'command' in args:
+		args['command'] = ' '.join(args['command'])
+	else:
+		args['command'] = ''
 	if args['command']:
 		for com in commands:
 			if (com.aliases.find(args['command']) >= 0):
@@ -129,7 +133,7 @@ async def Export(msg: discord.Message, args = {}, refwith = None):
 commands = [
 	Command(
 		['?помощь', '?help', '??'],
-		[ { 'type': '...string', 'name': 'command', 'desc': 'команда, по которой требуется помощь / ничего для показа списка команд' } ],
+		[ { 'type': '...string|', 'name': 'command', 'desc': 'команда, по которой требуется помощь / ничего для показа списка команд' } ],
 		'Помощь/список команд',
 		Help
 	),
