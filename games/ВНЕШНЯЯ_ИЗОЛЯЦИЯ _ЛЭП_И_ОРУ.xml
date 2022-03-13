@@ -1,32 +1,41 @@
-<test name="test1" mix="" health="0">
+<test name="test1" health="2">
 	<theory>
-		<text>Some text for introduction...</text>
+		<text>Теория по теме "Внешняя изоляция ЛЭП и ОРУ"</text>
 		<!-- Загрузить и приложить файл -->
-		<attachment url="attachment.pdf" />
+		<!-- <attachment url="attachment.pdf" /> -->
 		<!-- Вложение. color - RGB цвет, записывается по правилам HTML -->
-		<embed url="https://docs.google.com/presentation/d/1CEDW9hArxB_iVJHoWZgZzj7ob4Jwgzxx" title="Title" description="description" color="#FFF" />
+		<embed url="https://docs.google.com/presentation/d/1CEDW9hArxB_iVJHoWZgZzj7ob4Jwgzxx" title="Теория" description="description" color="#FFF" />
 	</theory>
 	<!-- атрибут levels означает, на каких уровнях сложности будет появляться данный вопрос -->
 	<!-- Если уровень сложности будет всего один, то данный атрибут можно опустить. -->
 	<!-- weight - количество баллов за данный вопрос -->
 	<!-- single-choice означает, что нужно выбрать 1 вариант. При этом, если правильных несколько, зачтется любой -->
-	<question type="single-choice" levels="all" weight="1">
+	<question type="single-choice" levels="easy medium hard" weight="1">
+		<message>
+			<text>Вы стоите неподалеку от работающего ЛЭП на резиновом коврике и в пластиковом шлеме со стеклом.</text>
+			<embed title="Где-то тут">
+				<image url="https://oz-gbi.ru/upload/medialibrary/2fe/r26enb1hajzwji2i0i9c4pv4rbiwwxg4.jpeg" />
+			</embed>
+		</message>
 		<!-- <message> - сообщение, которое будет отправлено перед непосредственно вопросом. Их может быть несколько. -->
-		<text>Какой диэлектрик определяет электрическую прочность внешней изоляции?</text>
+		<text>Что, главным образом, спасает вам жизнь?</text>
 		<option correct="">Атмосферный воздух</option>
-		<option>Сткело</option>
+		<option>Стекло</option>
 		<option>Резина</option>
 	</question>
-	<question type="single-choice" levels="easy medium hard" weight="1">
+	<question type="single-choice" levels="easy medium hard" weight="3">
 		<text>Что является электродами во внешней изоляции?</text>
+		<embed>
+			<image url="https://www.incart.ru/assets/foto/cable/KT07/12x10_07.jpg" />
+		</embed>
 		<option correct="">Провода фаз, металлические и железобетонные опоры и траверсы, поверхность земли.</option>
 		<option>Провода фаз, кирпичные и бетонные опоры, поверхность земли</option>
 		<option>Провода фаз, металлические и железобетонные опоры, поверхность атмосферы</option>
 	</question>
-	<question type="single-choice" levels="easy" weight="1">
-		<text>Какие диэлектрики применяются для поддержки проводов на ЛЭП и ошиновки на ОРУ?</text>
-		<option>Газообразные диэлектрики</option>
-		<option>Жидкие диэлектрики: хлорированные и фторированные углеводороды, парафиновые и вазелиновые масла</option>
-		<option correct="">Твердые диэлектрики:  фарфор, стекло, полимеры.</option>
+	<question type="single-choice" levels="easy medium hard" weight="1">
+		<text>Чем поддерживаются провда на ЛЭП и ошиновки на ОРУ??</text>
+		<option>Газами</option>
+		<option>Жидкостями</option>
+		<option correct="">Чем-то потверже</option>
 	</question>
 </test>

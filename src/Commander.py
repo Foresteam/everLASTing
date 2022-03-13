@@ -59,7 +59,7 @@ async def Help(msg: discord.Message, args = {}, refwith = None):
 	await msg.reply(fs or 'Команда не найдена') # msg.reply
 async def ListTests(msg: discord.Message, args = {}, refwith = None):
 	global tests
-	out = [f'{i + 1}. {tests[i].name}' for i in range(len(tests))]
+	out = [f'{i + 1}. {tests[i].name.replace("_", " ")}' for i in range(len(tests))]
 	out.append('Введите номер игры из списка (начав сообщение с префикса "> " или через "ответить")')
 	GetContext(msg).state = State.TEST_SELECTION
 	await msg.reply('\n'.join(out))
