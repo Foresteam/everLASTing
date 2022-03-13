@@ -18,8 +18,8 @@ class Test:
 			self.url: str
 			self.title: str
 			self.description: str
-			self.thumbnail: str
-			self.image: str
+			self.thumbnail: str = None
+			self.image: str = None
 			self.color: int
 		def fromXML(self, xml):
 			self.url = xml.attrib['url'] if 'url' in xml.attrib else ''
@@ -100,7 +100,6 @@ class Test:
 			if self.type == 'multi-choice':
 				correct = 0
 				chosen = [str(int(a) - 1) for a in answer.split()]
-				print(chosen)
 				for k, v in [(i, self.options[i],) for i in range(len(self.options))]:
 					if str(k + 1) in chosen and v.correct or not v.correct and str(k + 1) not in chosen:
 						correct += 1
@@ -111,6 +110,7 @@ class Test:
 						return self.weight
 				return 0
 	def Load(self, filename: str):
+		print(f'Loading {filename}...')
 		xml: ET.Element = ET.parse(filename, parser=ET.XMLParser(encoding='utf-8')).getroot()
 
 		self.mix = 'mix' in xml.attrib
@@ -126,9 +126,12 @@ class Test:
 				for k in self.levels:
 					if k in q.levels:
 						self.levels[k].append(q)
+		trem = []
 		for k in self.levels:
 			if len(self.levels[k]) == 0:
-				del self.levels[k]
+				trem.append(k)
+		for k in reversed(trem):
+			del self.levels[k]
 
 	def __init__(self, filename: str):
 		self.progress: int = -1
@@ -150,11 +153,18 @@ class Test:
 	
 	async def __SendMessage(message: discord.Message, channel: discord.TextChannel, msg: Msg, stext = None):
 		try:
+			e = None
+			if msg.embed:
+				e = discord.Embed.from_dict(msg.embed.__dict__)
+				if msg.embed.image:
+					e.set_image(url=msg.embed.image)
+				if msg.embed.thumbnail:
+					e.set_thumbnail(url=msg.embed.thumbnail)
 			await channel.send(
 				reference=message,
 				files=[discord.File(file) for file in msg.attachments] if len(
 					msg.attachments) > 0 else None,
-				embed=discord.Embed.from_dict(msg.embed.__dict__).set_image(url=msg.embed.image).set_thumbnail(url=msg.embed.thumbnail) if msg.embed else None,
+				embed=e,
 				content=stext or msg.text
 			)
 		except Exception as e:

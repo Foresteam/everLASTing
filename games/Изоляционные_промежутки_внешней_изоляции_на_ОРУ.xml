@@ -6,9 +6,9 @@
 	<theory>
 		<text>Some text for introduction...</text>
 		<!-- Загрузить и приложить файл -->
-		<attachment uri="attachment.pdf" />
+		<attachment url="attachment.pdf" />
 		<!-- Вложение. color - RGB цвет, записывается по правилам HTML -->
-		<embed uri="https://docs.google.com/presentation/d/1CEDW9hArxB_iVJHoWZgZzj7ob4Jwgzxx" title="Title" description="description" color="#FFF" />
+		<embed url="https://docs.google.com/presentation/d/1CEDW9hArxB_iVJHoWZgZzj7ob4Jwgzxx" title="Title" description="description" color="#FFF" />
 	</theory>
 	<!-- атрибут levels означает, на каких уровнях сложности будет появляться данный вопрос -->
 	<!-- Если уровень сложности будет всего один, то данный атрибут можно опустить. -->
@@ -16,21 +16,21 @@
 	<!-- single-choice означает, что нужно выбрать 1 вариант. При этом, если правильных несколько, зачтется любой -->
 	<question type="single-choice" levels="hard" weight="1">
 		<text>1. Металлический портал с ошиновкой, элементы разъединителя и вентильного разрядника на ОРУ 500 кВ.</text>
-		<attachment uri="1Opy 500.png" /> <!-- Должно отображаться как картинка! -->
+		<attachment url="1Opy 500.png" /> <!-- Должно отображаться как картинка! -->
 		<option>Вдоль поверхности проходных и опорных изоляторов.</option>
 		<option correct="">Промежутки между шинами фаз и вдоль поверхности опорных изоляторов.</option>
 		<option>Вдоль поверхности проходных изоляторов.</option>
 	</question>
 	<question type="single-choice" levels="hard" weight="1">
 		<text>2. Элегазовые выключатели 500 кВ на ОРУ-500.</text>
-		<attachment uri="2Opy 500.png" /> <!-- Должно отображаться как картинка! -->
+		<attachment url="2Opy 500.png" /> <!-- Должно отображаться как картинка! -->
 		<option correct="">Вдоль поверхности проходных и опорных изоляторов.</option>
 		<option>Промежутки между шинами фаз и вдоль поверхности опорных изоляторов.</option>
 		<option>Вдоль поверхности проходных изоляторов.</option>
 	</question>
 	<question type="single-choice" levels="hard" weight="1">
 		<text>3. Фаза автотрансформатора 500 кВ.</text>
-		<attachment uri="3Opy 500.png" /> <!-- Должно отображаться как картинка! -->
+		<attachment url="3Opy 500.png" /> <!-- Должно отображаться как картинка! -->
 		<option >Вдоль поверхности проходных и опорных изоляторов.</option>
 		<option>Промежутки между шинами фаз и вдоль поверхности опорных изоляторов.</option>
 		<option correct="">Вдоль поверхности проходных изоляторов.</option>
