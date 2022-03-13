@@ -94,12 +94,12 @@ class Test:
 				if child.tag == 'option':
 					self.options.append(Test.Option(child, self.type))
 			return self
-		def Check(self, answer: str) -> float:
+		def Check(self, answer) -> float:
 			if self.type == 'single-choice':
 				return self.weight if self.options[int(answer.split()[0]) - 1].correct else 0
 			if self.type == 'multi-choice':
 				correct = 0
-				chosen = [str(int(a) - 1) for a in answer.split()]
+				chosen = [a for a in answer.split()]
 				for k, v in [(i, self.options[i],) for i in range(len(self.options))]:
 					if str(k + 1) in chosen and v.correct or not v.correct and str(k + 1) not in chosen:
 						correct += 1

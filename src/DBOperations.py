@@ -33,7 +33,6 @@ def GetResultsByNickname(**kwargs) -> dict:
         del q['nickname']
     if not kwargs['name']:
         del q[f'tests.{kwargs["name"]}']
-    print(q)
     results = db.users.find(q)
     return results
 

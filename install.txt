@@ -1,3 +1,5 @@
 discord
 discord.ext
 discord_components
+openpyxl
+pymongo

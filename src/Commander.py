@@ -1,9 +1,11 @@
+from pathlib import Path
 import discord
 import os
 from enum import Enum
 from ArgParser import Command, ArgParser
 from Test import Test
 import DBOperations
+from pandas import DataFrame
 
 DBOperations.Init()
 
@@ -62,11 +64,12 @@ async def ListTests(msg: discord.Message, args = {}, refwith = None):
 	GetContext(msg).state = State.TEST_SELECTION
 	await msg.reply('\n'.join(out))
 async def ListLevels(msg: discord.Message, args = {}, refwith = None):
-	out = ['легкий', 'средний', 'сложный']
+	out = ['легкий (easy)', 'средний (medium)', 'сложный (hard)']
 	out.append('Введите сложность (начав сообщение с префикса "> " или через "ответить")')
 	GetContext(msg).state = State.LEVEL_SELECTION
 	await msg.reply('\n'.join(out))
 async def Reply(msg: discord.Message, args = {}, refwith = None):
+	args['reply'] = ' '.join(args['reply'])
 	global client
 	# filter replies to us from other messages
 	if not refwith and (not msg.reference or (await (await client.fetch_channel(msg.reference.channel_id)).fetch_message(msg.reference.message_id)).author.id != client.user.id):
@@ -88,7 +91,7 @@ async def Reply(msg: discord.Message, args = {}, refwith = None):
 			if not ctx.test.Accept(args['reply'], msg) or not await ctx.test.Next(msg):
 				await ctx.test.End(msg)
 				if len(ctx.test.participants) == 1:
-					id = ctx.test.participants[0]
+					id = str(ctx.test.participants[0])
 					user: discord.User = await client.fetch_user(id)
 					DBOperations.TestFinished(id, ctx.test.name, ctx.test.level, ctx.test.score, ctx.test.GetTotal(), user.display_name)
 	except Exception as e:
@@ -105,12 +108,28 @@ async def View(msg: discord.Message, args = {}, refwith = None):
 				t.append(f'|\t\t{nlevel}: {level["ratio"]}')
 		out.append('\n'.join(t))
 	await msg.reply('\n'.join(out) or 'Ничего не найдено :(')
+async def Export(msg: discord.Message, args = {}, refwith = None):
+	data = DBOperations.GetResultsByNickname(**args)
+	out = {'User ID': [], 'User nickname': [], 'Level name': [], 'Difficulty level': [], 'Total score': [], 'Got score': [], 'Ratio%': []}
+	for user in data:
+		for name, test in user['tests'].items():
+			for nlevel, level in test.items():
+					out['User ID'].append(str(user['id']))
+					out['User nickname'].append(user['nickname'])
+					out['Level name'].append(name)
+					out['Difficulty level'].append(nlevel)
+					out['Total score'].append(level['total'])
+					out['Got score'].append(level['solved'])
+					out['Ratio%'].append(level['ratio'])
+	c: discord.TextChannel = msg.channel
+	DataFrame(out).to_excel('export.xlsx', sheet_name='sheet1', index=False)
+	await c.send(file=discord.File('./export.xlsx'))
 		
 
 commands = [
 	Command(
 		['?помощь', '?help', '??'],
-		[ { 'type': 'string...', 'name': 'command', 'desc': 'команда, по которой требуется помощь / ничего для показа списка команд' } ],
+		[ { 'type': '...string', 'name': 'command', 'desc': 'команда, по которой требуется помощь / ничего для показа списка команд' } ],
 		'Помощь/список команд',
 		Help
 	),
@@ -131,8 +150,18 @@ commands = [
 		View
 	),
 	Command(
+		['?экспорт', '?export'],
+		[
+			{ 'type': 'string|', 'name': 'nickname', 'desc': 'никнейм пользователя' },
+			{ 'type': 'string|', 'name': 'name', 'desc': 'название уровня' },
+			{ 'type': 'string|', 'name': 'level', 'desc': 'уровень сложности' }
+		],
+		'Экспорт результатов пользователя за прохождение уровня. Без параметров = вывод всей БД',
+		Export
+	),
+	Command(
 		['>', ''],
-		[ { 'type': 'string...', 'name': 'reply', 'desc': 'ответ' } ],
+		[ { 'type': '...string', 'name': 'reply', 'desc': 'ответ' } ],
 		'Ответ на вопрос бота.',
 		Reply
 	)

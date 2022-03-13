@@ -72,7 +72,6 @@ class ArgParser:
 			else:
 				cnstrStr = True
 			ttext = ttext[i + 1:]
-		print(strs)
 		
 		i = 0
 		doVArg, vArg, vArgType, vArgName = False, [], '', ''
