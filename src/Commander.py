@@ -45,14 +45,14 @@ def LevelEng(level: str):
 
 async def Help(msg: discord.Message, args = {}, refwith = None):
 	global commands
-	fs: str
+	fs: str = None
 	if 'command' in args:
 		args['command'] = ' '.join(args['command'])
 	else:
 		args['command'] = ''
 	if args['command']:
 		for com in commands:
-			if (com.aliases.find(args['command']) >= 0):
+			if args['command'] in com.aliases:
 				fs = com.printHelp()
 				break
 	else:
