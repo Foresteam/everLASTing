@@ -5,3 +5,4 @@ token
 export.*
 *.bkp
 *.odt
+*.docx
