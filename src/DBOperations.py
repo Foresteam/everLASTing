@@ -41,21 +41,3 @@ def Init():
     client = pymongo.MongoClient('mongodb://localhost:27017/everLASTing')
     db = client['everLASTing']
     users = db['users']
-    # users.drop()
-    # users.insert_one({
-    #     'id': '123',
-    #     'nickname': 'Vaserman',
-    #     'tests': {
-    #         'test1': {
-    #             'medium': {
-    #                 'total': 10,
-    #                 'solved': 5,
-    #                 'ratio': 0.5
-    #             }
-    #         }
-    #     }
-    # })
-    # TestFinished('1234', 'test1', 'hard', solved=1, total=4, nickname='anonymous')
-    # GetResultsByNickname('anonymous')
-
-Init()

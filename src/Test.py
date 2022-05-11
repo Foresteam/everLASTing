@@ -21,7 +21,7 @@ class Test:
 			self.thumbnail: str = None
 			self.image: str = None
 			self.color: int
-		def fromXML(self, xml):
+		def fromXML(self, xml: ET.Element):
 			self.url = xml.attrib['url'] if 'url' in xml.attrib else ''
 			self.title = xml.attrib['title'] if 'title' in xml.attrib else ''
 			self.description = ''
