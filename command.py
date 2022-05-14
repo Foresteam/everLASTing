@@ -3,6 +3,8 @@ import discord
 from discord.ext import commands
 from discord_components import DiscordComponents, Button, ButtonStyle
 
+# какие-то тесты другого контрибутора
+
 DISCORD_TOKEN = 'OTUyMTIyNjMyNzA1MzAyNTc4.YixbTQ.vnzgQeRAu95l64Xv5qcEZSd6o14'
 
 bot = commands.Bot(command_prefix='!')

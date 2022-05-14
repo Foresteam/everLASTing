@@ -1,11 +1,11 @@
-from pathlib import Path
 import discord
 import os
 from enum import Enum
+from pandas import DataFrame
+
 from ArgParser import Command, ArgParser
 from Test import Test
 import DBOperations
-from pandas import DataFrame
 
 DBOperations.Init()
 
@@ -15,11 +15,12 @@ class State(Enum):
 	LEVEL_SELECTION = 2
 	QUESTION_ANSWER = 3
 
+# Message context.
 class Context:
 	def __init__(self):
 		self.test: Test
 		self.state = State.MENU
-TCTX = Context()
+
 def GetContext(msg: discord.Message) -> Context:
 	# return TCTX # debug
 	global contexts
@@ -34,6 +35,9 @@ def GetContext(msg: discord.Message) -> Context:
 	if id not in contexts[ctxType]:
 		contexts[ctxType][id] = Context()
 	return contexts[ctxType][id]
+
+
+# English names substitution (not to switch locales all the time)
 def LevelEng(level: str):
 	if level.startswith('ea'):
 		return 'easy'
@@ -61,17 +65,21 @@ async def Help(msg: discord.Message, args = {}, refwith = None):
 			r.append(com.printHelp())
 		fs = '\n'.join(r)
 	await msg.reply(fs or 'Команда не найдена') # msg.reply
+
 async def ListTests(msg: discord.Message, args = {}, refwith = None):
 	global tests
 	out = [f'{i + 1}. {tests[i].name.replace("_", " ")}' for i in range(len(tests))]
 	out.append('Введите номер игры из списка (начав сообщение с префикса "> " или через "ответить")')
 	GetContext(msg).state = State.TEST_SELECTION
 	await msg.reply('\n'.join(out))
+
 async def ListLevels(msg: discord.Message, args = {}, refwith = None):
 	out = ['легкий (easy)', 'средний (medium)', 'сложный (hard)']
 	out.append('Введите сложность (начав сообщение с префикса "> " или через "ответить")')
 	GetContext(msg).state = State.LEVEL_SELECTION
 	await msg.reply('\n'.join(out))
+
+# The "brain", basically
 async def Reply(msg: discord.Message, args = {}, refwith = None):
 	args['reply'] = ' '.join(args['reply'])
 	global client
@@ -100,6 +108,7 @@ async def Reply(msg: discord.Message, args = {}, refwith = None):
 					DBOperations.TestFinished(id, ctx.test.name, ctx.test.level, ctx.test.score, ctx.test.GetTotal(), user.display_name)
 	except Exception as e:
 		raise e
+
 async def View(msg: discord.Message, args = {}, refwith = None):
 	data = DBOperations.GetResultsByNickname(**args)
 	out = []
@@ -112,6 +121,7 @@ async def View(msg: discord.Message, args = {}, refwith = None):
 				t.append(f'|\t\t{nlevel}: {level["ratio"]}')
 		out.append('\n'.join(t))
 	await msg.reply('\n'.join(out) or 'Ничего не найдено :(')
+
 async def Export(msg: discord.Message, args = {}, refwith = None):
 	data = DBOperations.GetResultsByNickname(**args)
 	out = {'User ID': [], 'User nickname': [], 'Level name': [], 'Difficulty level': [], 'Total score': [], 'Got score': [], 'Ratio%': []}
@@ -125,9 +135,9 @@ async def Export(msg: discord.Message, args = {}, refwith = None):
 					out['Total score'].append(level['total'])
 					out['Got score'].append(level['solved'])
 					out['Ratio%'].append(level['ratio'])
-	c: discord.TextChannel = msg.channel
+	channel: discord.TextChannel = msg.channel
 	DataFrame(out).to_excel('export.xlsx', sheet_name='sheet1', index=False)
-	await c.send(file=discord.File('./export.xlsx'))
+	await channel.send(file=discord.File('./export.xlsx'))
 		
 
 commands = [
@@ -171,8 +181,10 @@ commands = [
 	)
 ]
 
+# the prefix is none so. Need to use different prefixes for some commands.
+# Weird solution 'cause now all commands (with one exception) start with "?", which may be confusing
 parser = ArgParser('')
-tests: list[Test] = [
+tests = [
 	Test('games/test/test1.xml'),
 ]
 for file in os.listdir('games/'):
@@ -187,11 +199,11 @@ contexts = {
 	}
 }
 client: discord.Client
-async def onMessage(msg: discord.Message):
+async def OnMessage(msg: discord.Message):
 	cmd: Command
-	# try except...
+	# try except... No.
 	cmd, args, refwith = parser.parse(msg, commands)
 	await cmd.execute(msg, args=args, refwith=refwith)
-def passClient(cl):
+def PassClient(cl: discord.Client):
 	global client
 	client = cl

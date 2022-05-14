@@ -38,6 +38,7 @@ def GetResultsByNickname(**kwargs) -> dict:
 
 def Init():
     global client, db, users
+	# connect to DB. Change this, if your DB URL is different
     client = pymongo.MongoClient('mongodb://localhost:27017/everLASTing')
     db = client['everLASTing']
     users = db['users']

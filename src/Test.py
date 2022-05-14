@@ -1,10 +1,7 @@
 # https://www.youtube.com/watch?v=c2ZGE5Fpu9E
 from copy import deepcopy
 from functools import reduce
-import json
-from pathlib import Path
 from posixpath import basename
-from pydoc import describe
 from random import shuffle
 import xml.etree.ElementTree as ET
 import discord
@@ -206,5 +203,5 @@ class Test:
 		await message.reply(
 			f'Игра завершена. Результат: {self.score}/{self.GetTotal()} ({100 * self.score // self.GetTotal()}%)' +
 			'\nУчастники: ' + ', '.join([generateMention(id) for id in self.participants]) +
-			f'\n {"<" if len(self.participants) < 2 else ">"}1,  баллы **{"" if len(self.participants) < 2 else "не"}учтены**'
+			f'\n {"<" if len(self.participants) < 2 else "≥"}2,  баллы **{"" if len(self.participants) < 2 else "не"}учтены**'
 		)
